@@ -4,6 +4,7 @@ Shader "Custom/LightingShader" {
 	Properties {
 		_Tint ("Tint", Color) = (1, 1, 1, 1)
 		_MainTex ("Albedo", 2D) = "white" {}
+		_Smoothness ("Smoothness", Range (0, 1)) = 0.5
 	}
 	SubShader {
 		Pass {
@@ -21,6 +22,7 @@ Shader "Custom/LightingShader" {
 			float4 _Tint;
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
+			float _Smoothness;
 			
 			struct VertexData {
 				float4 position : POSITION;
@@ -55,9 +57,12 @@ Shader "Custom/LightingShader" {
 			    
 			    float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
 			    float3 reflectionDir = reflect(-lightDir, i.normal);
-			    return DotClamped(viewDir, reflectionDir);
-			                    
+			    float3 halfVector = normalize(lightDir + viewDir);
+			    float3 specular = pow(DotClamped(halfVector, i.normal),_Smoothness * 100);
 			    float3 lightColor = _LightColor0.rgb;
+			    specular *= lightColor;
+			    return float4(specular, 1);
+			                    
 			    float3 albedo = tex2D(_MainTex, i.uv).rgb * _Tint.rgb;
 			    float3 diffuse = albedo * lightColor * DotClamped(lightDir, i.normal);
                 return float4(diffuse, 1);
