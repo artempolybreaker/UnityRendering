@@ -31,6 +31,9 @@ Shader "Custom/LightingShader" {
 		        "LightMode" = "ForwardAdd"
 		    }
 		
+		    Blend One One
+		    ZWrite Off
+		    
             CGPROGRAM
             #pragma target 3.0
             
