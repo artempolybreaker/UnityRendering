@@ -36,25 +36,25 @@ Interpolators MyVertexProgram (VertexData v) {
     return i;
 }
 
+UnityLight CreateLight(Interpolators i) {
+    UnityLight light;
+    float3 dir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos); 
+    light.dir = dir;
+    light.color = _LightColor0.rgb;
+    light.ndotl = DotClamped(i.normal, light.dir);
+    return light;
+}
+
 float4 MyFragmentProgram (Interpolators i) : SV_TARGET {
     i.normal = normalize(i.normal);
     
-    float3 lightColor = _LightColor0.rgb;
-    float3 lightDir = _WorldSpaceLightPos0.xyz;
     float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
-    float3 reflectionDir = reflect(-lightDir, i.normal);
-    float3 halfVector = normalize(lightDir + viewDir);
 
     float3 albedo = tex2D(_MainTex, i.uv).rgb * _Tint.rgb;
     float3 specularTint;
     float oneMinusReflectivity;
     albedo = DiffuseAndSpecularFromMetallic(albedo, _Metallic, specularTint, oneMinusReflectivity);
-    
-    UnityLight light;
-    light.color = lightColor;
-    light.dir = lightDir;
-    light.ndotl = DotClamped(i.normal, lightDir);
-    
+        
     UnityIndirect indirectLight;
     indirectLight.diffuse = 0;
     indirectLight.specular = 0;
@@ -66,15 +66,8 @@ float4 MyFragmentProgram (Interpolators i) : SV_TARGET {
         _Smoothness,
         i.normal,
         viewDir,
-        light,
+        CreateLight(i),
         indirectLight
     );
-    
-    /*
-    float3 specular = specularTint * lightColor * pow(DotClamped(halfVector, i.normal),_Smoothness * 100);
-    float3 diffuse = albedo * lightColor * DotClamped(lightDir, i.normal);
-    
-    return float4(diffuse + specular, 1);
-    */
 }
 #endif
