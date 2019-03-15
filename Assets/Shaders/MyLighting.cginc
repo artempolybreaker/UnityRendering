@@ -39,8 +39,13 @@ Interpolators MyVertexProgram (VertexData v) {
 
 UnityLight CreateLight(Interpolators i) {
     UnityLight light;
-    light.dir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
-
+    
+    #if defined(POINT)
+        light.dir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
+    #else
+        light.dir = _WorldSpaceLightPos0.xyz;
+    #endif
+    
     UNITY_LIGHT_ATTENUATION(attenuation, 0, i.worldPos);
 
     light.color = _LightColor0.rgb * attenuation;

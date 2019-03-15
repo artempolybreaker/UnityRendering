@@ -37,10 +37,12 @@ Shader "Custom/LightingShader" {
             CGPROGRAM
             #pragma target 3.0
             
+            #pragma multi_compile DIRECTIONAL POINT
+			
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
 			
-            #define POINT
+			
             #include "MyLighting.cginc"
 
 			ENDCG
