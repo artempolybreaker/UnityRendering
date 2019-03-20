@@ -40,7 +40,7 @@ Interpolators MyVertexProgram (VertexData v) {
 UnityLight CreateLight(Interpolators i) {
     UnityLight light;
     
-    #if defined(POINT) || defined(SPOT)
+    #if defined(POINT) || defined(SPOT) || defined(POINT_COOKIE)
         light.dir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
     #else
         light.dir = _WorldSpaceLightPos0.xyz;
